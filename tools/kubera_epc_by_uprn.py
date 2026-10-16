@@ -50,6 +50,7 @@ for f in feats:
     u, pc = uprn12(p.get("uprn")), p.get("postcode")
     if not u or not pc:
         counts["no_uprn"] += 1
+        out.append({"id": p.get("id"), "uprn": u, "status": "no_uprn"})
         continue
     if pc not in searches:
         r = get(f"{API}/api/domestic/search?" + urllib.parse.urlencode({"postcode": pc}))
@@ -76,7 +77,11 @@ for f in feats:
     out.append({"id": p.get("id"), "uprn": u, "status": "matched",
                 "search_row": no_address(row), "certificate": no_address(cert["data"])})
 
-result = {"retrieved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "counts": counts, "listings": out}
+assert len(out) == sum(counts.values()), "rows do not match counts"
+result = {"source": "MHCLG Get energy performance of buildings data (domestic EPC register API)",
+          "licence": "Open Government Licence v3.0; address and postcode fields removed",
+          "certificate_page": "https://find-energy-certificate.service.gov.uk/energy-certificate/<certificateNumber>",
+          "retrieved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "counts": counts, "listings": out}
 text = json.dumps(result, ensure_ascii=False)
 assert TOKEN not in text, "key leaked"
 open("kubera_epc_raw.json", "w").write(text)
