@@ -16,11 +16,13 @@ if not TOKEN:
 print("key length:", len(TOKEN))
 
 def get(url):
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {TOKEN}", "Accept": "application/json"})
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {TOKEN}", "Accept": "application/json", "User-Agent": "KUBERA GeoAI EPC helper"})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             return json.loads(r.read())
     except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            print("EPC API refused the key (HTTP", e.code, ") - check the key on the EPC website")
         return {"__error__": e.code}
 
 def uprn12(v):
@@ -35,7 +37,9 @@ def no_address(d):
         return [no_address(x) for x in d]
     return d
 
-feats = json.loads(urllib.request.urlopen(LISTINGS).read())["features"]
+UA = {"User-Agent": "Mozilla/5.0 (KUBERA GeoAI EPC helper; Colab)", "Accept": "application/json"}
+feats = json.loads(urllib.request.urlopen(urllib.request.Request(LISTINGS, headers=UA), timeout=30).read())["features"]
+print("listings:", len(feats))
 searches, out, counts = {}, [], {"matched": 0, "no_match": 0, "no_uprn": 0, "error": 0}
 for f in feats:
     p = f["properties"]
