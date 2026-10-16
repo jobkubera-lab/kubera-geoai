@@ -13,6 +13,10 @@ except Exception:
     pass
 if not TOKEN:
     TOKEN = getpass.getpass("EPC API key (hidden): ").strip()
+parts = TOKEN.split()
+if len(parts) > 1:
+    print("Note: the secret contains", len(parts), "pieces separated by spaces/new lines - using the first one.")
+TOKEN = parts[0] if parts else ""
 print("key length:", len(TOKEN))
 
 def get(url):
