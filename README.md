@@ -1,75 +1,113 @@
-# KUBERA GeoAI — Mitcham property evidence map
+# KUBERA GeoAI — property evidence for UK estate agents
 
-**An interactive map of homes for sale in Mitcham (CR4), London, shown next to real, sourced evidence: completed sales, energy certificates, flood zones and neighbourhood context.**
+**A map-based tool that prepares the facts an estate agent needs for each home: exact location, energy certificate, Material Information, costs, flood and planning context — all from open government data, with the source next to every figure.**
 
-### [▶ Open the live demo — kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
+### [▶ Open the live demo — kubera-geoai.pages.dev](https://kubera-geoai.pages.dev) · [Русская версия](https://kubera-geoai.pages.dev/?lang=ru)
 
-![Interactive map of 78 homes for sale in Mitcham](docs/screenshots/01-map.jpg)
+Pilot area: Mitcham (CR4), London Borough of Merton.
 
-KUBERA GeoAI does not invent a valuation. For every home it shows **what the public evidence says, how strong that evidence is, and what is missing.**
+![Interactive map of homes for sale in Mitcham](docs/screenshots/01-map.jpg)
+
+KUBERA GeoAI does not invent valuations or scores. For every home it shows **what the public data says, where it comes from, and what still has to be asked from the seller.**
 
 ---
 
+## Why agents need it
+
+Since April 2025 every property advert in the UK must give buyers the key facts about the home (*material information* under the Digital Markets, Competition and Consumers Act 2024): Council Tax, tenure, utilities, broadband, parking, flood risk, planning restrictions and more. Agents usually collect this by hand — often an hour per home.
+
+KUBERA GeoAI fills in everything that open data can answer and turns the rest into a short list of questions for the seller.
+
 ## What it does
 
-**Prices and market evidence**
-- **78 homes for sale** in Mitcham (CR4) on one map, coloured by asking price.
-- **Comparison with completed sales** (HM Land Registry): same property type within 1 km, typical range (25th–75th percentile) and a plain-English verdict, only when there are at least 5 sales.
-- **Evidence confidence**: high / limited / insufficient, with duplicate registry rows flagged.
-- **UK House Price Index**: the same sales re-expressed at the latest published index month. Original prices are never replaced.
-- **Price per m²** from EPC floor area (exact address matches only), plus a **£/m² map layer** in 400 m squares.
+**For the agency**
+- **Material Information pack** in every home card — Part A / B / C, each line marked *from data*, *partly from data* or *ask the seller*, with one-click copy.
+- **Load your own listings (CSV)** — the agency's file is read in the browser; only postcodes are sent for geocoding. Every check and cost then runs on the agency's own homes.
+- **Data checks** across all listings — stale snapshots, duplicate adverts, homes without an exact address, conflicting property type, expired energy certificates, missing tenure.
+- **Agency fee and lettings** — sale commission with or without VAT, landlord's rent after fees, legal deposit caps (Tenant Fees Act 2019).
+- **English / Russian interface** with one switch.
 
-**Location context**
-- **Environment Agency flood zones 2 and 3** (rivers and sea) as a map layer and in every home card.
-- **What's nearby**: nearest stations (TfL), state schools with their latest Ofsted outcome, GP, supermarket and park (OpenStreetMap). Distances are straight-line only.
+![Material Information pack](docs/screenshots/07-material-information.jpg)
 
-**Tools**
-- Area rent and gross yield (ONS, Merton), mortgage example with your own rate.
-- Compare up to 3 favourite homes side by side.
-- A shareable link to each home, and a print / PDF dossier.
-- Works on desktop and mobile.
+**Facts about each home**
+- **Exact map point** from the Unique Property Reference Number (OS Open UPRN) where the listing provides it, otherwise the postcode centre — always labelled.
+- **Energy certificate (EPC) matched by UPRN** — band, floor area, certificate date, expiry warning and a link to the official certificate.
+- **Broadband availability** for the postcode (Ofcom Connected Nations) and a link to the Ofcom mobile checker.
+- **Flood risk** — Environment Agency flood zones (rivers and sea) and surface-water risk.
+- **Conservation areas** (Planning Data, MHCLG).
+- **Nearby** — stations, schools with Ofsted outcome, GP, shops, parks.
+
+**Costs and finance (estimates, clearly marked)**
+- Running costs: energy (from the EPC), Council Tax for the area by band, water.
+- Stamp Duty (current GOV.UK rates: first-time buyer, additional property, non-UK resident).
+- Mortgage example with the lender's own rate.
+
+![Costs and finance](docs/screenshots/08-costs-finance.jpg)
+
+**Market evidence**
+- Asking prices compared with completed sales (HM Land Registry) of the same type within 1 km, only when there are enough sales.
+- UK House Price Index adjustment, price per m² from EPC floor area, £/m² map layer.
 
 ## Screenshots
 
 | | |
 |---|---|
-| **Home card: price, sources, flood risk, what's nearby** ![Home card](docs/screenshots/02-home-card.jpg) | **Evidence from completed sales, UK HPI, £/m²** ![Evidence](docs/screenshots/03-evidence.jpg) |
-| **£/m² from completed sales (400 m squares)** ![Price per m2](docs/screenshots/04-price-per-m2.jpg) | **Environment Agency flood zones 2 and 3** ![Flood zones](docs/screenshots/05-flood-zones.jpg) |
+| **Data checks over all listings** ![Data checks](docs/screenshots/09-data-checks.jpg) | **Energy certificate matched by UPRN** ![EPC](docs/screenshots/10-epc-certificate.jpg) |
+| **Home card: price, sources, flood risk, nearby** ![Home card](docs/screenshots/02-home-card.jpg) | **Evidence from completed sales** ![Evidence](docs/screenshots/03-evidence.jpg) |
+| **£/m² from completed sales** ![Price per m2](docs/screenshots/04-price-per-m2.jpg) | **Flood zones 2 and 3** ![Flood zones](docs/screenshots/05-flood-zones.jpg) |
+| **Agency listings upload** ![Upload](docs/screenshots/11-agency-upload.jpg) | **Russian interface** ![Russian](docs/screenshots/12-russian-interface.jpg) |
 
-**Side-by-side comparison of favourite homes**
+## How it is built (high level)
 
-![Compare favourites](docs/screenshots/06-compare.jpg)
+```
+Open government data ──► weekly refresh (GitHub Actions) ──► checked, versioned JSON snapshots
+                                                                   │
+Agency CSV (in the browser) ──► postcode geocoding ────────────────┤
+                                                                   ▼
+                                   React + TypeScript map application (Cloudflare Pages)
+                                   ├─ matching by UPRN (location, EPC)
+                                   ├─ rule-based data checks
+                                   ├─ Material Information builder
+                                   └─ cost calculators (published rates only)
+```
+
+- **Front end:** React, TypeScript, Vite, Tailwind CSS, Leaflet / OpenStreetMap.
+- **Data pipeline:** Python, scheduled weekly; every snapshot carries its source, licence and retrieval date.
+- **Quality:** type checks, unit tests for every calculator and rule, browser tests in English and Russian on desktop and mobile before each release.
+- **Principles:** no invented numbers, missing data shown as missing, every figure linked to its source.
+
+The application source code is private. This repository is a public showcase.
 
 ## Data sources
 
 | Source | Used for | Licence |
 |---|---|---|
-| HM Land Registry Price Paid Data | Completed sales | Open Government Licence v3.0 |
-| HM Land Registry UK House Price Index | Index adjustment (Merton, by property type) | Open Government Licence v3.0 |
-| MHCLG Energy Performance Certificates | Floor area, energy band | Open Government Licence v3.0 |
-| ONS Price Index of Private Rents | Area rents (Merton) | Open Government Licence v3.0 |
-| Environment Agency Flood Map for Planning | Flood zones 2 and 3 (rivers and sea) | Open Government Licence v3.0 |
-| Transport for London Unified API | Stations | Powered by TfL Open Data (OGL v2) |
-| Ofsted management information | School inspection outcomes | Open Government Licence v3.0 |
-| OpenStreetMap | Map, amenities | © OpenStreetMap contributors, ODbL |
+| HM Land Registry Price Paid Data, UK HPI | Completed sales, index adjustment | Open Government Licence v3.0 |
+| Ordnance Survey OS Open UPRN | Exact property points | Open Government Licence v3.0 |
+| MHCLG Energy Performance Certificates | Energy band, floor area, certificate date | Open Government Licence v3.0 |
+| Ofcom Connected Nations | Broadband availability by postcode | © Ofcom |
+| Environment Agency | Flood zones, surface-water risk | Open Government Licence v3.0 |
+| Planning Data (MHCLG) | Conservation areas | Open Government Licence v3.0 |
+| VOA, Merton Council, GLA | Council Tax bands and charges | Open Government Licence v3.0 |
+| GOV.UK, legislation.gov.uk | Stamp Duty rates, Tenant Fees Act caps | Open Government Licence v3.0 |
+| ONS Price Index of Private Rents | Area rents | Open Government Licence v3.0 |
+| Transport for London Unified API | Stations | Powered by TfL Open Data |
+| Ofsted | School inspection outcomes | Open Government Licence v3.0 |
+| OpenStreetMap | Base map, amenities | © OpenStreetMap contributors, ODbL |
 
-Contains HM Land Registry data © Crown copyright and database right. Contains Environment Agency information © Environment Agency and database right. The data providers do not endorse this project.
+Contains HM Land Registry, Ordnance Survey and Environment Agency data © Crown copyright and database right. Broadband data © Ofcom (Connected Nations). The data providers do not endorse this project.
 
 ## Honest limitations
 
-- **Location = postcode centre**, not the exact building. Distances and flood results are approximate.
-- **£/m² only where the EPC matches the exact address**; the floor area of homes for sale is not published, so it is never assumed.
-- **Flood zones** cover rivers and sea only, ignore defences and do not include surface-water risk.
-- **Rents are area medians** for Merton, not the rent of a specific home.
-- **Listings are a snapshot** dated 11 October 2026; prices and availability may have changed.
-- Missing data is shown as missing, never filled in.
-
-**This is a research tool, not a valuation, survey, mortgage or investment advice.**
-
-## Status
-
-Working prototype, Mitcham (CR4), London. This repository is a public showcase; the application source code is private.
+- One pilot area (Mitcham, CR4). Other areas need their data loaded.
+- No direct CRM connection yet: agencies export listings from their CRM as CSV.
+- The Council Tax band of a single address is not open data — the tool shows the area and links to the official GOV.UK check.
+- Ofcom publishes mobile signal per address only in its own checker, so the tool links to it.
+- Costs are estimates from published averages, not household bills.
+- **This is a preparation tool for agents, not legal advice, a valuation, a survey or financial advice. The agent remains responsible for what is published.**
 
 ## Contact
 
-GitHub: [jobkubera-lab](https://github.com/jobkubera-lab) · Live demo: [kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
+Nikola Kubera, London · GitHub: [jobkubera-lab](https://github.com/jobkubera-lab) · Live demo: [kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
+
+Open to pilots with estate agencies and roles in property data / GIS.
