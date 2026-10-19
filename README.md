@@ -1,4 +1,4 @@
-# KUBERA GeoAI — property evidence for UK estate agents
+# KUBERA GEO SI — property evidence for UK estate agents
 
 **A map-based tool that prepares the facts an estate agent needs for each home: exact location, energy certificate, Material Information, costs, flood and planning context — all from open government data, with the source next to every figure.**
 
@@ -8,7 +8,7 @@ Pilot area: Mitcham (CR4), London Borough of Merton.
 
 ![Interactive map of homes for sale in Mitcham](docs/screenshots/01-map.jpg)
 
-KUBERA GeoAI does not invent valuations or scores. For every home it shows **what the public data says, where it comes from, and what still has to be asked from the seller.**
+KUBERA GEO SI does not invent valuations or scores. For every home it shows **what the public data says, where it comes from, and what still has to be asked from the seller.**
 
 ---
 
@@ -16,7 +16,7 @@ KUBERA GeoAI does not invent valuations or scores. For every home it shows **wha
 
 Since April 2025 every property advert in the UK must give buyers the key facts about the home (*material information* under the Digital Markets, Competition and Consumers Act 2024): Council Tax, tenure, utilities, broadband, parking, flood risk, planning restrictions and more. Agents usually collect this by hand — often an hour per home.
 
-KUBERA GeoAI fills in everything that open data can answer and turns the rest into a short list of questions for the seller.
+KUBERA GEO SI fills in everything that open data can answer and turns the rest into a short list of questions for the seller.
 
 ## What it does
 
