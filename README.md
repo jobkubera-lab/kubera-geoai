@@ -111,3 +111,16 @@ Contains HM Land Registry, Ordnance Survey and Environment Agency data © Crown 
 Nikola Kubera, London · GitHub: [jobkubera-lab](https://github.com/jobkubera-lab) · Live demo: [kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
 
 Open to pilots with estate agencies and roles in property data / GIS.
+
+## Where things live
+
+| What | Where |
+|---|---|
+| Live product | https://kubera-geoai.pages.dev |
+| This repository | public showcase: description, screenshots, docs — no application code |
+| Application code | private (`kubera-local-ai`, branch `gemini/ui`, folder `apps/geoai-ui`) |
+| Hugging Face | https://huggingface.co/spaces/Dzambala/kubera-geoai — static showcase page |
+
+## Licence
+
+All rights reserved — see [LICENSE](LICENSE). Data shown keeps its own licence (mostly Open Government Licence v3.0).
