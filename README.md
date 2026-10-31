@@ -108,7 +108,7 @@ Contains HM Land Registry, Ordnance Survey and Environment Agency data © Crown 
 
 ## Contact
 
-Nikola Kubera, London · GitHub: [jobkubera-lab](https://github.com/jobkubera-lab) · Live demo: [kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
+Nikola Kubera, London · GitHub: [kubera-lab](https://github.com/kubera-lab) · Live demo: [kubera-geoai.pages.dev](https://kubera-geoai.pages.dev)
 
 Open to pilots with estate agencies and roles in property data / GIS.
 
